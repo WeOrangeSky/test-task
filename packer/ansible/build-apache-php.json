@@ -1,0 +1,42 @@
+{
+	"builders": [
+		{
+			"name": "Apache-PHP",
+			"type": "docker",
+			"image": "alpine:latest",
+			"run_command": ["-d", "-i", "-t", "--entrypoint=/bin/sh", "--", "{{.Image}}"],
+			"commit": "true",
+			"changes": [
+				"CMD [\"/usr/sbin/httpd\", \"-D\", \"FOREGROUND\"]",
+				"EXPOSE 80 443"
+			]
+		}
+	],
+	"provisioners": [
+		{
+			"type": "shell",
+			"inline": [
+			  "apk add ansible"
+			]
+		},
+		{
+			"type": "ansible-local",
+			"playbook_file": "./deploy.yml",
+			"role_paths": "./roles/lamp/",
+			"staging_directory": "/tmp/playbooks/"
+		},
+		{
+			"type": "shell",
+			"inline": [
+			  "apk del ansible"
+			]
+		}
+	],
+	"post-processors": [
+		{
+			"type": "docker-tag",
+			"repository": "packer-apachephp",
+			"tag": "0.1"
+		}
+	]
+}
