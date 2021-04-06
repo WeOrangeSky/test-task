@@ -10,8 +10,23 @@
 				"CMD [\"/usr/sbin/httpd\", \"-D\", \"FOREGROUND\"]",
 				"EXPOSE 80 443"
 			]
+		},
+		{
+			"name": "MySQL",
+			"type": "docker",
+			"image": "alpine:latest",
+			"run_command": ["-d", "-i", "-t", "--entrypoint=/bin/sh", "--", "{{.Image}}"],
+			"commit": "true",
+			"changes": [
+				"CMD [\"mysqld\", \"--user=mysql\"]",
+				"EXPOSE 3306"
+			]
 		}
 	],
+	"variables": {
+		"mysql_user": "mysql",
+		"mysql_password": "mysql"
+	},
 	"provisioners": [
 		{
 			"type": "shell",
@@ -23,7 +38,22 @@
 			"type": "ansible-local",
 			"playbook_file": "./deploy.yml",
 			"role_paths": "./roles/lamp/",
-			"staging_directory": "/tmp/playbooks/"
+			"staging_directory": "/tmp/playbooks/",
+			"extra_arguments": ["--tags \"apache \""],
+			"only": ["Apache-PHP"]
+		},
+		{
+			"type": "ansible-local",
+			"playbook_file": "./deploy.yml",
+			"role_paths": "./roles/lamp/",
+			"staging_directory": "/tmp/playbooks/",
+			"extra_arguments": [
+				"--extra-vars \"",
+				"\"mysql_user={{ `mysql_user` }}\"",
+				"\"mysql_password={{ `mysql_password` }}\"",
+				"--tags \"mysql\"\""
+				],
+			"only": ["MySQL"]
 		},
 		{
 			"type": "shell",

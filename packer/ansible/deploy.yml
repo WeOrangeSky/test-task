@@ -1,7 +1,13 @@
 ---
-  - name: LAMP Installation
+  - name: Apache Installation
     hosts: 127.0.0.1
     tasks:
-    - include_role:
-        name: lamp
-        tasks_from: apache
+      - include_role:
+          name: lamp
+          tasks_from: apache
+        tags: apache
+
+      - include_role:
+          name: lamp
+          tasks_from: mysql
+        tags: mysql

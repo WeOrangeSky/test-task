@@ -1,0 +1,33 @@
+  - name: Install the packages MySQL (MariaDB)
+    apk:
+      name: mysql
+      state: latest
+      update_cache: yes
+    tags: 
+      - mysql
+
+  - name: Create directory for .sock file
+    file:
+      path: /run/mysqld
+      state: directory
+      owner: "{{ mysql_user }}"
+      group: "{{ mysql_user }}"
+    tags: 
+      - mysql
+
+  - name: Initialization of default schema
+    shell: mysql_install_db --user=root --ldata=/var/lib/mysql/
+
+  - replace:
+    path: /etc/my.cnf.d/mariadb-server.cnf
+    regexp: '^#bind'
+    replace: 'bind'
+    tags: 
+      - mysql
+
+  - replace:
+    path: /etc/my.cnf.d/mariadb-server.cnf
+    regexp: '^skip-networking'
+    replace: '#skip-networking'
+    tags: 
+      - mysql

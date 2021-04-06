@@ -3,8 +3,12 @@
       name: apache2,php7-apache2
       state: latest
       update_cache: yes
+    tags: 
+      - apche
 
   - name: Sets Up PHP Info Page
     copy:
       src: "./index.php"
       dest: "/var/www/localhost/htdocs/index.php"
+    tags: 
+      - apche
