@@ -16,18 +16,34 @@
       - mysql
 
   - name: Initialization of default schema
-    shell: mysql_install_db --user=root --ldata=/var/lib/mysql/
-
-  - replace:
-    path: /etc/my.cnf.d/mariadb-server.cnf
-    regexp: '^#bind'
-    replace: 'bind'
+    shell: mysql_install_db --user=mysql --ldata=/var/lib/mysql/
     tags: 
       - mysql
 
-  - replace:
-    path: /etc/my.cnf.d/mariadb-server.cnf
-    regexp: '^skip-networking'
-    replace: '#skip-networking'
+  - name: Copy SQL-template with permissions
+    template:
+      src: ./grant.sql.j2
+      dest: /tmp/grant.sql
+    tags: 
+      - mysql
+
+  - name: Granting permissions
+    shell: mysqld --user=root --bootstrap < /tmp/grant.sql
+    tags: 
+      - mysql
+
+  - name: Adjusting default configuration [1]
+    replace:
+      path: /etc/my.cnf.d/mariadb-server.cnf
+      regexp: '^skip-networking'
+      replace: '#skip-networking'
+    tags: 
+      - mysql
+  
+  - name: Adjusting default configuration [2]
+    replace:
+      path: /etc/my.cnf.d/mariadb-server.cnf
+      regexp: '^#bind'
+      replace: 'bind'
     tags: 
       - mysql

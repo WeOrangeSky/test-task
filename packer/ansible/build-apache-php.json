@@ -7,8 +7,8 @@
 			"run_command": ["-d", "-i", "-t", "--entrypoint=/bin/sh", "--", "{{.Image}}"],
 			"commit": "true",
 			"changes": [
-				"CMD [\"/usr/sbin/httpd\", \"-D\", \"FOREGROUND\"]",
-				"EXPOSE 80 443"
+				"EXPOSE 80 443",
+				"ENTRYPOINT [\"/usr/sbin/httpd\",\"-D\",\"FOREGROUND\"]"
 			]
 		},
 		{
@@ -18,13 +18,14 @@
 			"run_command": ["-d", "-i", "-t", "--entrypoint=/bin/sh", "--", "{{.Image}}"],
 			"commit": "true",
 			"changes": [
-				"CMD [\"mysqld\", \"--user=mysql\"]",
-				"EXPOSE 3306"
+				"EXPOSE 3306",
+				"VOLUME [\"/var/lib/mysql\"]",
+				"ENTRYPOINT [\"/usr/bin/mysqld\",\"--user=mysql\"]"
 			]
 		}
 	],
 	"variables": {
-		"mysql_user": "mysql",
+		"mysql_user": "mysql",   
 		"mysql_password": "mysql"
 	},
 	"provisioners": [
@@ -39,7 +40,7 @@
 			"playbook_file": "./deploy.yml",
 			"role_paths": "./roles/lamp/",
 			"staging_directory": "/tmp/playbooks/",
-			"extra_arguments": ["--tags \"apache \""],
+			"extra_arguments": ["--tags \"apache\""],
 			"only": ["Apache-PHP"]
 		},
 		{
@@ -47,11 +48,10 @@
 			"playbook_file": "./deploy.yml",
 			"role_paths": "./roles/lamp/",
 			"staging_directory": "/tmp/playbooks/",
-			"extra_arguments": [
+			"extra_arguments": ["--tags \"mysql\"",
 				"--extra-vars \"",
-				"\"mysql_user={{ `mysql_user` }}\"",
-				"\"mysql_password={{ `mysql_password` }}\"",
-				"--tags \"mysql\"\""
+				"\"mysql_user={{ user `mysql_user` }}\"",
+				"\"mysql_password={{ user `mysql_password` }}\"\""
 				],
 			"only": ["MySQL"]
 		},
@@ -66,7 +66,14 @@
 		{
 			"type": "docker-tag",
 			"repository": "packer-apachephp",
-			"tag": "0.1"
+			"tag": "0.1",
+			"only": ["Apache-PHP"]
+		},
+		{
+			"type": "docker-tag",
+			"repository": "packer-mysql",
+			"tag": "0.1",
+			"only": ["MySQL"]
 		}
 	]
 }

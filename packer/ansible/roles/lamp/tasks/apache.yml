@@ -4,11 +4,11 @@
       state: latest
       update_cache: yes
     tags: 
-      - apche
+      - apache
 
   - name: Sets Up PHP Info Page
     copy:
       src: "./index.php"
       dest: "/var/www/localhost/htdocs/index.php"
     tags: 
-      - apche
+      - apache
