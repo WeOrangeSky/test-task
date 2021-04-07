@@ -24,7 +24,7 @@ mysqld --user=root --bootstrap --silent-startup < grant.sql
 echo 'Adjustment default configuration'
 sed -i '/^skip-networking/d' /etc/my.cnf.d/mariadb-server.cnf
 sed -i 's/^#bind/bind/' /etc/my.cnf.d/mariadb-server.cnf
-#rm grant.sql
+rm grant.sql
 
 echo 'Starting MySQL Server'
 sleep 5
