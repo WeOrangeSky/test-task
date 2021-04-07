@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+ apachephp:
+   build: ./apachephp
+   container_name: docker-compose-apachephp
+   image: docker-compose-apachephp
+   restart: always
+   ports:
+     - 8080:80
+     - 4443:443
+ mysql:
+   build: ./mysql
+   container_name: docker-compose-mysql
+   image: docker-compose-mysql
+   restart: always
+   ports:
+     - 3306:3306

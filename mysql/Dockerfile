@@ -6,8 +6,8 @@ ENV MYSQL_USER=mysql
 RUN apk add mysql --no-cache
 
 COPY ./fc.sh .
-RUN chmod +x start.sh
-RUN /bin/sh start.sh
+RUN chmod +x fc.sh
+RUN /bin/sh fc.sh
 
 VOLUME ["/var/lib/mysql"]
 
